@@ -1,0 +1,7 @@
+[project]
+name = "task-cli"
+version = "0.0.1"
+dependencies = ["argparse", "platformdirs"]
+
+[project.scripts]
+task-cli = "task_cli.main:main"
