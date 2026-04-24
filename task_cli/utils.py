@@ -1,0 +1,26 @@
+from datetime import datetime, timezone
+from platformdirs import user_cache_path
+from pathlib import Path
+import json
+
+# configure cache path
+DATA_PATH = user_cache_path("task-cli", "ranum")
+DB_FILE = DATA_PATH / "database.json"
+JSON_OPTS = {"indent": 4, "sort_keys": True}
+
+
+def get_time():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def load_db(file_path: Path = DB_FILE):
+    try:
+        return json.loads(file_path.read_text(encoding="UTF-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"next_id": 1, "entries": []}
+
+
+def save_db(data: dict, file_path: Path = DB_FILE):
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(file_path, "w", encoding="UTF-8") as f:
+        json.dump(data, f, **JSON_OPTS)
