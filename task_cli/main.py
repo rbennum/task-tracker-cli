@@ -12,12 +12,16 @@ def add_task_cmd(args):
         "updated_at": utils.get_time(),
     }
     data["entries"].append(new_entry)
+    data["next_id"] += 1
     utils.save_db(data)
+    utils.display_task(new_entry)
 
 
 def list_name_cmd(args):
     data = utils.load_db()
-    print(data["entries"])
+    for entry in data["entries"]:
+        utils.display_task(entry)
+        print("\n")
 
 
 def main():

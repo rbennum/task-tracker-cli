@@ -24,3 +24,17 @@ def save_db(data: dict, file_path: Path = DB_FILE):
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with open(file_path, "w", encoding="UTF-8") as f:
         json.dump(data, f, **JSON_OPTS)
+
+
+def display_local_time(time: str):
+    utc_dt = datetime.fromisoformat(time)
+    local_dt = utc_dt.astimezone()
+    return f"{local_dt.strftime('%Y-%m-%d %I:%M %p %Z')}"
+
+
+def display_task(entry: dict):
+    print(f"ID: {entry["id"]}")
+    print(f"Description: {entry["description"]}")
+    print(f"Status: {entry["status"]}")
+    print(f"Created At: {display_local_time(entry["created_at"])}")
+    print(f"Updated At: {display_local_time(entry["updated_at"])}")
