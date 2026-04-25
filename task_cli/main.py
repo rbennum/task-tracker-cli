@@ -72,6 +72,24 @@ def delete_task_cmd(args):
         print(f"Task with ID {target_id} not found")
 
 
+def mark_task_cmd(args):
+    data = utils.load_db()
+    entries = data.get("entries", [])
+    target_id = args.id
+    task_index = next(
+        (i for i, item in enumerate(entries) if item["id"] == target_id), None
+    )
+    if task_index is not None:
+        marker = "in-progress" if args.command == "mark-in-progress" else "done"
+        entries[task_index]["status"] = marker
+        entries[task_index]["updated_at"] = utils.get_time()
+        data["entries"] = entries
+        utils.save_db(data)
+        utils.display_task(entries[task_index])
+    else:
+        print(f"Task with ID {target_id} not found")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Simple task_cli")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -98,6 +116,18 @@ def main():
     delete_parser = subparsers.add_parser("delete", help="Update an old task")
     delete_parser.add_argument("id", type=int, help="Task ID to be deleted")
     delete_parser.set_defaults(func=delete_task_cmd)
+
+    # mark-in-progress
+    mark_progress_parser = subparsers.add_parser(
+        "mark-in-progress", help="Marking a task as in progress"
+    )
+    mark_progress_parser.add_argument("id", type=int, help="Target task ID")
+    mark_progress_parser.set_defaults(func=mark_task_cmd)
+
+    # mark-done
+    mark_done_parser = subparsers.add_parser("mark-done", help="Marking a task as done")
+    mark_done_parser.add_argument("id", type=int, help="Target task ID")
+    mark_done_parser.set_defaults(func=mark_task_cmd)
 
     args = parser.parse_args()
     args.func(args)
