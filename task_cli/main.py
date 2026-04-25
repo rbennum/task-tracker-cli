@@ -19,9 +19,39 @@ def add_task_cmd(args):
 
 def list_name_cmd(args):
     data = utils.load_db()
-    for entry in data["entries"]:
+    status = args.status
+    if status and status not in ["todo", "in-progress", "done"]:
+        print(f"Option {status} is unavailable")
+        return
+
+    entries = data.get("entries", [])
+    if status:
+        entries = [e for e in entries if e.get("status") == status]
+
+    if not entries:
+        print(f"No tasks found" + (f" with status {status}") if status else "")
+        return
+
+    for entry in entries:
         utils.display_task(entry)
         print("\n")
+
+
+def update_task_cmd(args):
+    data = utils.load_db()
+    entries = data.get("entries", [])
+    target_id = args.id
+    task_index = next(
+        (i for i, item in enumerate(entries) if item["id"] == target_id), None
+    )
+    if task_index is not None:
+        entries[task_index]["description"] = args.description
+        entries[task_index]["updated_at"] = utils.get_time()
+        data["entries"] = entries
+        utils.display_task(entries[task_index])
+        utils.save_db(data)
+    else:
+        print("Task not found")
 
 
 def main():
@@ -35,7 +65,14 @@ def main():
 
     # list
     list_parser = subparsers.add_parser("list", help="List all tasks")
+    list_parser.add_argument("status", help="Filter by task status", nargs="?")
     list_parser.set_defaults(func=list_name_cmd)
+
+    # update
+    update_parser = subparsers.add_parser("update", help="Update an old task")
+    update_parser.add_argument("id", type=int, help="Task ID")
+    update_parser.add_argument("description", type=str, help="New task description")
+    update_parser.set_defaults(func=update_task_cmd)
 
     args = parser.parse_args()
     args.func(args)
