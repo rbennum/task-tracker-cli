@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from platformdirs import user_cache_path
 from pathlib import Path
 import json
+import os
 
 # configure cache path
 DATA_PATH = user_cache_path("task-cli", "ranum")
@@ -22,8 +23,10 @@ def load_db(file_path: Path = DB_FILE):
 
 def save_db(data: dict, file_path: Path = DB_FILE):
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(file_path, "w", encoding="UTF-8") as f:
+    temp_file = file_path.with_suffix(".tmp")
+    with open(temp_file, "w", encoding="UTF-8") as f:
         json.dump(data, f, **JSON_OPTS)
+    os.replace(temp_file, file_path)
 
 
 def display_local_time(time: str):
