@@ -51,7 +51,25 @@ def update_task_cmd(args):
         utils.display_task(entries[task_index])
         utils.save_db(data)
     else:
-        print("Task not found")
+        print(f"Task with ID {target_id} not found")
+
+
+def delete_task_cmd(args):
+    data = utils.load_db()
+    entries = data.get("entries", [])
+    target_id = args.id
+    task_index = next(
+        (i for i, item in enumerate(entries) if item["id"] == target_id), None
+    )
+    if task_index is not None:
+        deleted_task = entries.pop(task_index)
+        data["entries"] = entries
+        utils.save_db(data)
+        print(
+            f"Successfully deleted task {target_id}: '{deleted_task.get("description", "N/A")}'"
+        )
+    else:
+        print(f"Task with ID {target_id} not found")
 
 
 def main():
@@ -73,6 +91,11 @@ def main():
     update_parser.add_argument("id", type=int, help="Task ID")
     update_parser.add_argument("description", type=str, help="New task description")
     update_parser.set_defaults(func=update_task_cmd)
+
+    # delete
+    delete_parser = subparsers.add_parser("delete", help="Update an old task")
+    delete_parser.add_argument("id", type=int, help="Task ID to be deleted")
+    delete_parser.set_defaults(func=delete_task_cmd)
 
     args = parser.parse_args()
     args.func(args)
