@@ -55,6 +55,7 @@ python -m task_cli mark-done 3
 
 ## Project Structure
 
+```text
 task-cli/
 ├── task_cli/
 │   ├── __init__.py
@@ -65,23 +66,24 @@ task-cli/
 │   └── test_main.py     # Comprehensive test suite
 ├── README.md
 └── requirements.txt     # (optional)
+```
 
 ## Running Tests
 
 Install test requirements:
-pip install pytest
+`pip install pytest`
 
 Run the full test suite:
-pytest
+`pytest`
 
 Run with more details:
-pytest -v
+`pytest -v`
 
 All tests run against an isolated temporary database, so they do not affect your real tasks.
 
 ## Requirements
 
-- Python 3.9 or higher
+- Python 3.13 (could use lower version, I wasn't thinking or anything when picking up this version)
 - platformdirs
 
 ## Example Output
