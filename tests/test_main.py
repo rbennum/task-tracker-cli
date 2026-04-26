@@ -17,10 +17,6 @@ def test_add_task(temp_db, capsys):
     assert "Description: Buy milk" in captured.out
     assert "Status: todo" in captured.out
 
-    # Debug helper (bisa dihapus nanti)
-    print("DB file used:", temp_db)
-    print("Content after add:", temp_db.read_text(encoding="UTF-8"))
-
     data = json.loads(temp_db.read_text(encoding="UTF-8"))
     assert data["entries"][0]["description"] == "Buy milk"
     assert data["next_id"] == 2
