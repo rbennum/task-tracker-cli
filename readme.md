@@ -4,6 +4,8 @@ A simple, lightweight command-line todo list application written in Python. It s
 
 Built as a learning project to practice argparse, pytest, and clean testing with temporary databases.
 
+Part of [roadmap.sh](https://roadmap.sh/projects/task-tracker).
+
 ## Features
 
 - Add new tasks
