@@ -20,10 +20,6 @@ def add_task_cmd(args):
 def list_name_cmd(args):
     data = utils.load_db()
     status = args.status
-    if status and status not in ["todo", "in-progress", "done"]:
-        print(f"Option {status} is unavailable")
-        return
-
     entries = data.get("entries", [])
     if status:
         entries = [e for e in entries if e.get("status") == status]
@@ -80,7 +76,7 @@ def mark_task_cmd(args):
         (i for i, item in enumerate(entries) if item["id"] == target_id), None
     )
     if task_index is not None:
-        marker = "in-progress" if args.command == "mark-in-progress" else "done"
+        marker = "in-progress" if "in-progress" in args.command else "done"
         entries[task_index]["status"] = marker
         entries[task_index]["updated_at"] = utils.get_time()
         data["entries"] = entries
@@ -90,7 +86,7 @@ def mark_task_cmd(args):
         print(f"Task with ID {target_id} not found")
 
 
-def main():
+def main(args_list=None):
     parser = argparse.ArgumentParser(description="Simple task_cli")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -102,18 +98,21 @@ def main():
     # list
     list_parser = subparsers.add_parser("list", help="List all tasks")
     list_parser.add_argument(
-        "status", help="Filter by task status (todo, in-progress, and done)", nargs="?"
+        "status",
+        choices=["todo", "in-progress", "done"],
+        help="Filter by task status (todo, in-progress, and done)",
+        nargs="?",
     )
     list_parser.set_defaults(func=list_name_cmd)
 
     # update
-    update_parser = subparsers.add_parser("update", help="Update an old task")
+    update_parser = subparsers.add_parser("update", help="Update a task")
     update_parser.add_argument("id", type=int, help="Task ID")
     update_parser.add_argument("description", type=str, help="New task description")
     update_parser.set_defaults(func=update_task_cmd)
 
     # delete
-    delete_parser = subparsers.add_parser("delete", help="Update an old task")
+    delete_parser = subparsers.add_parser("delete", help="Delete a task")
     delete_parser.add_argument("id", type=int, help="Task ID to be deleted")
     delete_parser.set_defaults(func=delete_task_cmd)
 
@@ -129,7 +128,7 @@ def main():
     mark_done_parser.add_argument("id", type=int, help="Target task ID")
     mark_done_parser.set_defaults(func=mark_task_cmd)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args_list)
     args.func(args)
 
 
